@@ -89,7 +89,7 @@ if app_mode == 'About App':
     ''')
 
 elif app_mode == 'Run on Image':
-    drawing_spec = mp_drawing.DrawingSpec(thickness=2, circle_radius=1)
+    drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
     st.markdown(
         """
@@ -157,6 +157,23 @@ elif app_mode == 'Run on Image':
 
         st.subheader('Output Image')
         st.image(out_image, use_column_width=True)
+
+        ## Save Result
+        # if st.button("Download a copy"):
+        from PIL import Image
+        import io
+
+        output = io.BytesIO()
+        output_image = Image.fromarray(out_image) ## convert result from np.ndarray
+        output_image.save(output, format='JPEG') ## save again
+        result_image = output.getvalue()
+
+
+        btn = st.download_button(
+            label="Keep a copy",
+            data=result_image,
+            file_name="meshed_image.png",
+            mime="image/jpeg")
 
 elif app_mode == 'Run on Video':
     st.set_option('deprecation.showfileUploaderEncoding', False)
