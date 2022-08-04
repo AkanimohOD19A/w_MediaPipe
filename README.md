@@ -1,0 +1,1 @@
+![Sample] (./content/sample_1.png)
