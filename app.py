@@ -95,7 +95,7 @@ if app_mode == 'About App':
 elif app_mode == 'Run on Image':
     st.sidebar.markdown('---')
     contour_value_1 = st.sidebar.slider('Contour Thickness',
-                                        min_value=0, max_value=3, value=1)
+                                        min_value=1, max_value=3, value=1)
     contour_value_2 = st.sidebar.slider('Circle Radius',
                                         min_value=0, max_value=3, value=1)
     drawing_spec = mp_drawing.DrawingSpec(thickness=contour_value_1, circle_radius=contour_value_2)
