@@ -2,16 +2,19 @@ import streamlit as st
 import mediapipe as mp
 import numpy as np
 import cv2
-import time
-import tempfile
 from PIL import Image
 import io
+import os
 
 mp_drawing = mp.solutions.drawing_utils
 mp_face_mesh = mp.solutions.face_mesh
 
 DEMO_IMAGE = './content/demo.jpg'
 DEMO_VIDEO = './content/demo.mp4'
+
+def save_uploadedfile(uploadedfile):
+    with open(os.path.join("./content/", "selfie.jpg"), "wb") as f:
+        f.write(uploadedfile.getbuffer())
 
 st.title("Face Mesh with MediaPipe")
 
@@ -61,7 +64,7 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 
 ## Various Application States
 app_mode = st.sidebar.selectbox('Choose the App Mode',
-                                ['About App', 'Run on Image', 'Run on Video']
+                                ['About App', 'Take a Selfie', 'Run on Image', 'Run on Video']
                                 )
 
 if app_mode == 'About App':
@@ -91,6 +94,27 @@ if app_mode == 'About App':
     # #   About Me \n
     #     **Pattern** | **Recognition**
     # ''')
+
+elif app_mode == "Take a Selfie":
+    picture = st.camera_input("Take a picture")
+
+    if picture:
+        st.sidebar.image(picture, caption="Selfie")
+        if st.sidebar.button("Save Image"):
+            ## Function to save image
+            save_uploadedfile(picture)
+            st.sidebar.success("Saved File - Click to Download")
+            st.sidebar.write("Run on this Image in the next tab")
+            st.sidebar.markdown("---")
+            selfie_img = "./content/selfie.jpg"
+            with open(selfie_img, "rb") as file:
+                btn = st.sidebar.download_button(
+                    label="Download",
+                    data=file,
+                    file_name="selfie.jpg",
+                    mime="image/jpeg")
+
+    st.write("Click on **Clear photo** to retake picture")
 
 elif app_mode == 'Run on Image':
     st.sidebar.markdown('---')
@@ -130,7 +154,12 @@ elif app_mode == 'Run on Image':
     img_file_buffer = st.sidebar.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
     if img_file_buffer is not None:
         image = np.array(Image.open(img_file_buffer))
+    elif st.sidebar.button("Use Selfie"):
+        self_image = np.array(Image.open('./content/selfie.jpg'))
+        st.sidebar.markdown("---")
+        image = self_image
     else: #default to demo image
+        st.sidebar.markdown("---")
         demo_image = DEMO_IMAGE
         image = np.array(Image.open(demo_image))
 
